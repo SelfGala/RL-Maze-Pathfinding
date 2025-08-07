@@ -4,29 +4,29 @@ from q_learning_agent import QLearningAgent
 # 主程序
 if __name__ == "__main__":
     # 选择迷宫生成方式
-    print("选择迷宫类型:")
-    print("1. 随机生成的迷宫（简单随机放置墙壁）")
-    print("2. 固定布局的迷宫")
-    choice = input("请输入选择 (1/2, 默认为1): ").strip()
+    print("Select the type of maze:")
+    print("1. Randomly generated maze (with walls placed randomly)")
+    print("2. Fixed-layout maze")
+    choice = input("Please make a selection (1/2, default is 1): ").strip()
     
     if choice == '2':
-        print("使用固定布局的迷宫")
+        print("Use Fixed-layout maze")
         env = MazeEnvironment(maze_size=(10, 10), use_random=False)
         
     else:
-        print("使用简单随机生成的迷宫")
+        print("Use Randomly generated maze (with walls placed randomly)")
         try:
-            wall_prob = float(input("输入墙壁密度 (0.1-0.5, 默认0.3): ") or "0.3")
+            wall_prob = float(input("Input wall quantity density (0.1 - 0.5, default 0.3): ") or "0.3")
             wall_prob = max(0.1, min(0.5, wall_prob))  # 限制范围
         except:
             wall_prob = 0.3
             
         env = MazeEnvironment(maze_size=(10, 10), use_random=True, wall_probability=wall_prob)
     
-    print("迷宫环境创建完成！")
+    print("Maze env created！")
     
     # 显示初始迷宫
-    print("初始迷宫:")
+    print("Initial Maze:")
     env.render()
     
     # 创建Q-learning智能体
@@ -38,8 +38,8 @@ if __name__ == "__main__":
                           epsilon_min=0.01)
     
     # 训练智能体（启用视频录制）
-    print("是否录制训练过程GIF？(y/n)")
-    record_training = input().lower() == 'y'
+    print("Whether to record the training process as a GIF?(Y/N, default is N)")
+    record_training = input().upper() == 'Y'
     
     agent.train(episodes=1000, max_steps_per_episode=200, 
                 record_video=record_training, video_interval=20)
@@ -52,12 +52,12 @@ if __name__ == "__main__":
     
     # 显示训练后的策略
     env.reset()
-    print("\n训练后的策略（红色箭头表示最佳动作）:")
+    print("\nThe trained strategy (the red arrow indicates the optimal action):")
     env.render(q_table=agent.q_table, show_values=True)
     
     # 创建GIF动画
-    print("\n是否创建GIF动画？")
-    create_gifs = input("输入 'y' 创建GIF: ").lower() == 'y'
+    print("\nWhether to create GIF？")
+    create_gifs = input("Input 'Y' to create GIF: ").upper() == 'Y'
     
     if create_gifs:
         # 创建寻路演示GIF
@@ -67,14 +67,13 @@ if __name__ == "__main__":
         if record_training and agent.training_positions:
             agent.create_training_gif("training_process.gif", fps=15)
         
-        print(f"\nGIF动画创建完成！")
-        print("生成的文件：")
-        print("- pathfinding_demo.gif: 寻路演示动画")
+        print("The generated file：")
+        print("- assets/pathfinding_demo.gif")
         if record_training and agent.training_positions:
-            print("- training_process.gif: 训练过程动画")
+            print("- assets/training_process.gif")
     
     # 展示一次完整的路径
-    print("\n展示一次完整的寻路过程:")
+    print("\nShow a complete path-finding process:")
     state = env.reset()
     path = [state]
     
@@ -85,8 +84,8 @@ if __name__ == "__main__":
         state = next_state
         
         if done:
-            print(f"找到路径！用了 {step + 1} 步")
-            print(f"路径: {' -> '.join([str(p) for p in path])}")
+            print(f"Path Founded！ {step + 1} Steps Total")
+            print(f"Path: {' -> '.join([str(p) for p in path])}")
             break
     
     env.render(q_table=agent.q_table, show_values=True)

@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
+import os
 from collections import defaultdict
 
 class QLearningAgent:
@@ -14,30 +15,28 @@ class QLearningAgent:
         self.epsilon_decay = epsilon_decay
         self.epsilon_min = epsilon_min
         
-        # Q表：使用字典存储状态-动作值
+        # Q Table
         self.q_table = defaultdict(lambda: np.zeros(len(env.actions)))
         
-        # 训练统计
         self.episode_rewards = []
         self.episode_steps = []
         
-        # 用于视频录制的数据
-        self.training_positions = []  # 存储训练过程中的位置
-        self.training_episodes = []   # 对应的episode数
+        self.training_positions = []
+        self.training_episodes = []
     
     def choose_action(self, state):
-        """epsilon-greedy策略选择动作"""
+        """epsilon-greedy"""
         if random.random() < self.epsilon:
-            return random.randint(0, len(self.env.actions) - 1)  # 探索
+            return random.randint(0, len(self.env.actions) - 1)
         else:
-            return np.argmax(self.q_table[state])  # 利用
+            return np.argmax(self.q_table[state])
     
     def update_q_value(self, state, action, reward, next_state):
-        """更新Q值"""
+        """Update Q Table"""
         current_q = self.q_table[state][action]
         max_next_q = np.max(self.q_table[next_state])
         
-        # Q-learning更新公式
+        # Q-learning Formula
         new_q = current_q + self.learning_rate * (
             reward + self.discount_factor * max_next_q - current_q
         )
@@ -45,8 +44,7 @@ class QLearningAgent:
         self.q_table[state][action] = new_q
     
     def train(self, episodes=1000, max_steps_per_episode=200, record_video=False, video_interval=50):
-        """训练智能体"""
-        print(f"开始训练，共{episodes}轮...")
+        print(f"Start the Training，{episodes} rounds total...")
         
         # 如果需要录制视频，准备数据存储
         if record_video:
@@ -102,13 +100,11 @@ class QLearningAgent:
                 avg_reward = np.mean(self.episode_rewards[-100:])
                 avg_steps = np.mean(self.episode_steps[-100:])
                 print(f"Episode {episode + 1}/{episodes}, "
-                      f"平均奖励: {avg_reward:.2f}, "
-                      f"平均步数: {avg_steps:.2f}, "
+                      f"Average rewards: {avg_reward:.2f}, "
+                      f"Average steps: {avg_steps:.2f}, "
                       f"Epsilon: {self.epsilon:.3f}")
     
     def test(self, num_tests=10):
-        """测试训练后的智能体"""
-        print(f"\n测试训练后的智能体...")
         test_epsilon = self.epsilon
         self.epsilon = 0  # 测试时不探索
         
@@ -128,34 +124,34 @@ class QLearningAgent:
                 if done:
                     success_count += 1
                     total_steps += steps
-                    print(f"测试 {test + 1}: 成功！用了 {steps} 步")
+                    print(f"Test {test + 1}: Win！ {steps} steps total")
                     break
             else:
-                print(f"测试 {test + 1}: 失败（超时）")
+                print(f"Test {test + 1}: Fail")
         
         self.epsilon = test_epsilon  # 恢复原epsilon值
         
         if success_count > 0:
             avg_steps = total_steps / success_count
-            print(f"\n测试结果: {success_count}/{num_tests} 成功")
-            print(f"平均步数: {avg_steps:.1f}")
+            print(f"\nTest: {success_count}/{num_tests} Win！")
+            print(f"Average steps: {avg_steps:.1f}")
         else:
-            print(f"\n测试结果: {success_count}/{num_tests} 成功")
+            print(f"\nTest: {success_count}/{num_tests} Win！")
     
     def plot_training_progress(self):
-        """绘制训练进度"""
+        """绘制训练进度图"""
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
         
         # 绘制奖励曲线
         ax1.plot(self.episode_rewards)
-        ax1.set_title('训练奖励')
+        ax1.set_title('Train Rewards per Episode')
         ax1.set_xlabel('Episode')
         ax1.set_ylabel('Total Reward')
         ax1.grid(True)
         
         # 绘制步数曲线
         ax2.plot(self.episode_steps)
-        ax2.set_title('每轮步数')
+        ax2.set_title('Train Steps per Episode')
         ax2.set_xlabel('Episode')
         ax2.set_ylabel('Steps')
         ax2.grid(True)
@@ -163,17 +159,25 @@ class QLearningAgent:
         plt.tight_layout()
         plt.show()
     
-    def create_training_gif(self, filename="training_process.gif", fps=10):
-        """创建训练过程的GIF动画"""
+    def create_training_gif(self, filename="training_process.gif", fps=20):
+        """创建Training的GIF"""
+        
+        assets_dir = "assets"
+        if not os.path.exists(assets_dir):
+            os.makedirs(assets_dir)
+            
+        full_path = os.path.join(assets_dir, filename)
+        
+        print(f"Creating tarining GIF: {full_path}")
         if not self.training_positions:
-            print("没有训练数据可用于创建GIF。请在训练时设置record_video=True")
+            print("No training data available to create GIF. Set record_video=True")
             return
         
-        print(f"正在创建训练过程GIF: {filename}")
+        print(f"The training process GIF is being created: {full_path}")
         
         fig, ax = plt.subplots(figsize=(10, 10))
         
-        # 创建基础迷宫显示
+        # 迷宫显示
         maze_display = self.env.get_maze_for_animation()
         cmap = plt.cm.colors.ListedColormap(['white', 'black', 'green', 'red'])
         im = ax.imshow(maze_display, cmap=cmap, interpolation='nearest')
@@ -181,7 +185,6 @@ class QLearningAgent:
         # 初始化智能体位置
         agent_dot, = ax.plot([], [], 'bo', markersize=12)
         
-        # 设置标题和网格
         title = ax.set_title('')
         ax.set_xticks(range(self.env.cols))
         ax.set_yticks(range(self.env.rows))
@@ -195,8 +198,7 @@ class QLearningAgent:
                 # 更新智能体位置
                 agent_dot.set_data([pos[1]], [pos[0]])
                 
-                # 更新标题
-                title.set_text(f'训练过程 - Episode: {episode}, Step: {frame}')
+                title.set_text(f'Process - Episode: {episode}, Step: {frame}')
                 
                 return agent_dot, title
             return agent_dot, title
@@ -207,17 +209,24 @@ class QLearningAgent:
         
         # 保存为GIF
         try:
-            anim.save(filename, writer='pillow', fps=fps)
-            print(f"训练过程GIF已保存为: {filename}")
+            anim.save(full_path, writer='pillow', fps=fps)
+            print(f"Training process GIF saved as: {full_path}")
         except Exception as e:
-            print(f"保存GIF失败: {e}")
-            print("请确保已安装Pillow: pip install Pillow")
+            print(f"GIF saved failed: {e}")
+            print("Pls make sure you have downloaded Pillow: pip install Pillow")
         
         plt.close()
     
     def create_pathfinding_gif(self, filename="pathfinding_demo.gif", fps=2):
-        """创建最终寻路演示的GIF"""
-        print(f"正在创建寻路演示GIF: {filename}")
+        """创建最终Path的GIF"""
+        
+        assets_dir = "assets"
+        if not os.path.exists(assets_dir):
+            os.makedirs(assets_dir)
+        
+        full_path = os.path.join(assets_dir, filename)
+        
+        print(f"Creating pathfinding GIF: {full_path}")
         
         # 使用训练好的智能体走一遍迷宫
         temp_epsilon = self.epsilon
@@ -261,7 +270,6 @@ class QLearningAgent:
         agent_dot, = ax.plot([], [], 'bo', markersize=15)
         trail_line, = ax.plot([], [], 'b-', alpha=0.5, linewidth=2)
         
-        # 设置标题和网格
         title = ax.set_title('')
         ax.set_xticks(range(self.env.cols))
         ax.set_yticks(range(self.env.rows))
@@ -282,9 +290,9 @@ class QLearningAgent:
                 
                 # 更新标题
                 if pos == self.env.goal_pos:
-                    title.set_text(f'寻路完成！总共用了 {frame} 步')
+                    title.set_text(f'Pathfound！ {frame} Steps total')
                 else:
-                    title.set_text(f'智能体寻路中... 步数: {frame}')
+                    title.set_text(f'Pathfinding... Steps: {frame}')
                 
                 return agent_dot, trail_line, title
             return agent_dot, trail_line, title
@@ -295,11 +303,11 @@ class QLearningAgent:
         
         # 保存为GIF
         try:
-            anim.save(filename, writer='pillow', fps=fps)
-            print(f"寻路演示GIF已保存为: {filename}")
+            anim.save(full_path, writer='pillow', fps=fps)
+            print(f"Pathfinding GIF saved as: {full_path}")
         except Exception as e:
-            print(f"保存GIF失败: {e}")
-            print("请确保已安装Pillow: pip install Pillow")
+            print(f"GIF saved failed: {e}")
+            print("Pls make sure you have downloaded Pillow: pip install Pillow")
         
         plt.close()
         
