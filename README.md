@@ -3,14 +3,14 @@
 [中文](#中文) | [English](#english)
 
 ## Training Process / 训练过程
-![Training Process](assets/training_process.gif)
+<img src="assets/training_process.gif" alt="Training Process" width="350" autoplay loop>
 
 ## Pathfinding Demo / 寻路演示  
-![Pathfinding Demo](assets/pathfinding_demo.gif)
+<img src="assets/pathfinding_demo.gif" alt="Pathfinding Demo" width="350" autoplay loop>
 
 ---
 
-## 中文
+## 基于Q-learning的迷宫寻路
 
 ### 项目简介
 使用Q-Learning算法学习迷宫导航的强化学习智能体。
@@ -48,7 +48,7 @@ python train.py
 
 ---
 
-## English
+## Maze Pathfinding with Q-Learning
 
 ### Overview
 A reinforcement learning agent that learns maze navigation using Q-Learning algorithm.
