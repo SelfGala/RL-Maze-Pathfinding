@@ -2,11 +2,17 @@
 
 [中文](#中文) | [English](#english)
 
-## Training Process / 训练过程
-<img src="assets/training_process.gif" alt="Training Process" width="350" autoplay loop>
-
-## Pathfinding Demo / 寻路演示  
-<img src="assets/pathfinding_demo.gif" alt="Pathfinding Demo" width="350" autoplay loop>
+## 训练过程 / Training Process  **&**  寻路演示 / Pathfinding Demo 
+<table>
+  <tr>
+    <td>
+      <img src="assets/training_process.gif" alt="Training Process" width="350" autoplay loop>
+    </td>
+    <td>
+      <img src="assets/pathfinding_demo.gif" alt="Pathfinding Demo" width="350" autoplay loop>
+    </td>
+  </tr>
+</table>
 
 ---
 
