@@ -1,13 +1,12 @@
 from maze_env import MazeEnvironment
 from q_learning_agent import QLearningAgent
 
-# 主程序
 if __name__ == "__main__":
     # 选择迷宫生成方式
     print("Select the type of maze:")
     print("1. Randomly generated maze (with walls placed randomly)")
     print("2. Fixed-layout maze")
-    choice = input("Please make a selection (1/2, default is 1): ").strip()
+    choice = input("Please make a selection (1 or 2, default is 1): ").strip()
     
     if choice == '2':
         print("Use Fixed-layout maze")

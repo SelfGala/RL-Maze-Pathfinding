@@ -44,6 +44,7 @@ class QLearningAgent:
         self.q_table[state][action] = new_q
     
     def train(self, episodes=1000, max_steps_per_episode=200, record_video=False, video_interval=50):
+
         print(f"Start the Training，{episodes} rounds total...")
         
         # 如果需要录制视频，准备数据存储
